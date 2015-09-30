@@ -95,7 +95,21 @@ variables:
         required: true
         type: null
     ELB_LISTENERS:
-        default: "[\n  {\n    :elb_protocol => 'http', \n    :elb_port => 80,\n    :to_protocol => 'https', \n    :to_port => 8443\n  }\n]\n"
+        default: >
+                 [
+                   {
+                       :elb_protocol => 'tcp',
+                       :elb_port => 2080,
+                       :to_protocol => 'tcp',
+                       :to_port => 2080
+                   }
+                   {
+                       :elb_protocol => 'tcp',
+                       :elb_port => 2079,
+                       :to_protocol => 'tcp',
+                       :to_port => 2079
+                   }
+                 ]
         description: The listeners to apply to the ELB
     CLUSTER_KEY:
         description: the ssh key to associate with the instance(s) - blank will disable ssh
