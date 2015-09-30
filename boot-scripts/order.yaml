@@ -4,4 +4,7 @@
 ##   - install_chef.sh
 ##   - run_chef.sh
 
+script-order:
+  - install_prereqs.sh
+  - install_etcd.sh
 
