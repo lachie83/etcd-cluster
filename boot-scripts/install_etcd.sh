@@ -35,7 +35,7 @@ if [ "true" = "$IS_LEADER" ]; then
 	-listen-client-urls "http://${MY_IPADDRESS}:2379,http://127.0.0.1:2379" \
 	-advertise-client-urls "http://${MY_IPADDRESS}:2379" \
 	-initial-cluster-token "$cluster_name" \
-	-initial-cluster "$name=http://${MY_IPADDRESS}:2380" 2>&1 1>> "$etcd_log_file" &
+	-initial-cluster "$name=http://${MY_IPADDRESS}:2380" 2>&1 >> "$etcd_log_file" &
 else
     ## we are not the leaders, lets generate a join string
     add_member_output="$(etcdctl --endpoint "http://${cluster_name}.${dns_zone}:2379" member add "$name" "http://${MY_IPADDRESS}:2380")"
