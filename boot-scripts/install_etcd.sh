@@ -18,7 +18,7 @@ echo "installing etcd"
 etcd_dir="/opt/etcd"
 (
     cd /tmp
-    curl -L  "https://github.com/coreos/etcd/releases/download/v${etcd_version}/etcd-v${etcd_version}-linux-amd64.tar.gz -o etcd-v${etcd_version}-linux-amd64.tar.gz"
+    curl -L  "https://github.com/coreos/etcd/releases/download/v${etcd_version}/etcd-v${etcd_version}-linux-amd64.tar.gz" -o "etcd-v${etcd_version}-linux-amd64.tar.gz"
 
     tar xzvf "etcd-v${etcd_version}-linux-amd64.tar.gz"
     mv "etcd-v${etcd_version}-linux-amd64" "$etcd_dir"
