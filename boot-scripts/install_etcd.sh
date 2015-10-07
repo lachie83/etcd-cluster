@@ -30,11 +30,12 @@ cd "$etcd_dir"
 name="$(echo $MY_IPADDRESS | perl -pe 's{\.}{}g')"
 
 if [ "true" = "$IS_LEADER" ]; then
-    ./etcd -name "$name" -initial-advertise-peer-urls "http://${MY_IPADDRESS}:2380" \
+    nohup ./etcd -name "$name" -initial-advertise-peer-urls "http://${MY_IPADDRESS}:2380" \
 	-listen-peer-urls "http://${MY_IPADDRESS}:2380" \
 	-listen-client-urls "http://${MY_IPADDRESS}:2379,http://127.0.0.1:2379" \
 	-advertise-client-urls "http://${MY_IPADDRESS}:2379" \
-	-initial-cluster-token "$cluster_name"
+	-initial-cluster-token "$cluster_name" \
+	-initial-cluster "$name=http://${MY_IPADDRESS}:2380" &
 else
     ## we are not the leaders, lets generate a join string
     add_member_output="$(etcdctl --endpoint "http://${cluster_name}.${dns_zone}:2379" member add "$name" "http://${MY_IPADDRESS}:2380")"
