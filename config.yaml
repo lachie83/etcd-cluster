@@ -1,4 +1,8 @@
 variables:
+    ETCD_VERSION:
+        description: etcd version
+        type: String
+        required: true
     VPC_NAME:
         description: the cloudcoreo defined vpc to add this cluster to
         type: String
