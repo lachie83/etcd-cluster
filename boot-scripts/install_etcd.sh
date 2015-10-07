@@ -39,10 +39,9 @@ if [ "true" = "$IS_LEADER" ]; then
 else
     ## we are not the leaders, lets generate a join string
     add_member_output="$(./etcdctl --endpoint "http://${cluster_name}.${dns_zone}:2379" member add "$name" "http://${MY_IPADDRESS}:2380")"
-    etcd_name="$(echo $add_member_output | grep ETCD_NAME | awk -F'\"' '{print $2}')"
-    etcd_initial_cluster="$(echo $add_member_output | grep ETCD_INITIAL_CLUSTER | awk -F'\"' '{print $2}')"
-    etcd_initial_cluster_state="$(echo $add_member_output | grep ETCD_INITIAL_CLUSTER_STATE | awk -F'\"' '{print $2}')"
-    
+    etcd_name="$(echo "$add_member_output" | grep ETCD_NAME | awk -F'\"' '{print $2}')"
+    etcd_initial_cluster="$(echo "$add_member_output" | grep ETCD_INITIAL_CLUSTER\\b | awk -F'\"' '{print $2}')"
+    etcd_initial_cluster_state="$(echo "$add_member_output" | grep ETCD_INITIAL_CLUSTER_STATE | awk -F'\"' '{print $2}' | perl -pe "s{'}{}g")"
     
     ./etcd -name "$etcd_name" -initial-advertise-peer-urls "http://${MY_IPADDRESS}:2380" \
 	-listen-peer-urls "http://${MY_IPADDRESS}:2380" \
