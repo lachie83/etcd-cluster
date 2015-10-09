@@ -1,4 +1,24 @@
 variables:
+    VPC_NAME:
+        description: the cloudcoreo defined vpc to add this cluster to
+        type: String
+        required: true
+        default: dev-vpc
+    VPC_CIDR:
+        description: the cloudcoreo defined vpc to add this cluster to
+        type: String
+        required: true
+        default: 10.1.0.0/16
+    PRIVATE_SUBNET_NAME:
+        description: the private subnet in which the cluster should be added
+        type: String
+        required: true
+        default: dev-private-subnet
+    PRIVATE_ROUTE_NAME:
+        description: the private subnet in which the cluster should be added
+        type: String
+        required: true
+        default: dev-private-route
     ETCD_PKG_VERSION:
         description: etcd version
         type: String
