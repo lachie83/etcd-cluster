@@ -2,7 +2,7 @@
 ######################################################################
 #
 # VARIABLES:
-#   ETCD_VERSION = 2.2.0
+#   ETCD_PKG_VERSION = 2.2.0
 #
 # PORTS:
 #     2380, 2379
@@ -11,7 +11,7 @@
 ## this stack extends the leader elect cluster, so lets source in the cluster profile and expose some variables to us
 source /etc/profile.d/cluster
 
-etcd_version="${ETCD_VERSION:-2.2.0}"
+etcd_pkg_version="${ETCD_PKG_VERSION:-2.2.0}"
 cluster_name="${CLUSTER_NAME:-kube-etcd}"
 dns_zone="${DNS_ZONE:-dev.aws.lcloud.com}"
 etcd_log_file="${ETCD_LOG_FILE:-/var/log/etcd.log}"
@@ -20,10 +20,10 @@ echo "installing etcd"
 etcd_dir="/opt/etcd"
 (
     cd /tmp
-    curl -L  "https://github.com/coreos/etcd/releases/download/v${etcd_version}/etcd-v${etcd_version}-linux-amd64.tar.gz" -o "etcd-v${etcd_version}-linux-amd64.tar.gz"
+    curl -L  "https://github.com/coreos/etcd/releases/download/v${etcd_pkg_version}/etcd-v${etcd_pkg_version}-linux-amd64.tar.gz" -o "etcd-v${etcd_pkg_version}-linux-amd64.tar.gz"
 
-    tar xzvf "etcd-v${etcd_version}-linux-amd64.tar.gz"
-    mv "etcd-v${etcd_version}-linux-amd64" "$etcd_dir"
+    tar xzvf "etcd-v${etcd_pkg_version}-linux-amd64.tar.gz"
+    mv "etcd-v${etcd_pkg_version}-linux-amd64" "$etcd_dir"
 )
 
 cd "$etcd_dir"
