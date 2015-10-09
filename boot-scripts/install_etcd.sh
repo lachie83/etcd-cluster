@@ -12,8 +12,8 @@
 source /etc/profile.d/cluster
 
 etcd_pkg_version="${ETCD_PKG_VERSION:-2.2.0}"
-cluster_name="${CLUSTER_NAME:-kube-etcd}"
-dns_zone="${DNS_ZONE:-dev.aws.lcloud.com}"
+cluster_name="${ETCD_CLUSTER_NAME}"
+dns_zone="${DNS_ZONE}"
 etcd_log_file="${ETCD_LOG_FILE:-/var/log/etcd.log}"
 echo "installing etcd"
 
