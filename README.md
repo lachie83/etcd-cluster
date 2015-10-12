@@ -4,7 +4,7 @@ etcd-cluster
 This repository is the [CloudCoreo](https://www.cloudcoreo.com) stack for etcd.
 
 ## Description
-This stack will add a scalable, highly availabe, self healing etcd cluster to your cloud environment.
+This stack will add a scalable, highly availabe, self healing etcd cluster to your cloud environment based on the [CloudCoreo leader election cluster here](http://hub.cloudcoreo.com/stack/leader-elect-cluster_35519).
 
 etcd is an open sourced, distributed, consistent key-value store from the folks over at CoreOS.
 
@@ -104,10 +104,9 @@ When a failure takes place, the Autoscaling group will replace the failed node. 
 1. High Availability
 1. Shared Configuration
 
-
 ## Diagram
 ![alt text](https://raw.githubusercontent.com/CloudCoreo/etcd-cluster/master/images/etcd-diagram.png "etcd Cluster Diagram")
 
 ## Icon
-![alt text](https://raw.githubusercontent.com/CloudCoreo/etcd-cluster/master/images/etcd-stacked-color.png "etcd icon")
+![alt text](https://raw.githubusercontent.com/CloudCoreo/etcd-cluster/master/images/etcd-stacked-color.pngo "etcd icon")
 
