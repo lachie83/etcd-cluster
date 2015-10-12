@@ -1,8 +1,14 @@
 #!/bin/bash
 
+cp ../extends/boot-scripts/lib/group_addresses.py /usr/bin/
+
+script="/usr/bin/remove_unhealthy.sh"
+
+cat <<"EOF" > "$script"
+#!/bin/bash
 source /etc/profile.d/cluster
 
-addresses="$(python ../extends/boot-scripts/lib/group_addresses.py)"
+addresses="$(python /usr/bin/group_addresses.py)"
 
 ## if we aren't in the address list it was a bad request
 if ! echo "$addresses" | grep -q "$MY_IPADDRESS"; then
@@ -22,3 +28,9 @@ fi
         fi
     done
 )
+
+EOF
+
+chmod +x "$script"
+
+echo "* * * * * $script > /var/log/remove_unhealthy.log" | crontab
