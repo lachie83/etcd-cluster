@@ -108,5 +108,5 @@ When a failure takes place, the Autoscaling group will replace the failed node. 
 ![alt text](https://raw.githubusercontent.com/CloudCoreo/etcd-cluster/master/images/etcd-diagram.png "etcd Cluster Diagram")
 
 ## Icon
-![alt text](https://raw.githubusercontent.com/CloudCoreo/etcd-cluster/master/images/etcd-stacked-color.pngo "etcd icon")
+![alt text](https://raw.githubusercontent.com/CloudCoreo/etcd-cluster/master/images/etcd-stacked-color.png "etcd icon")
 
