@@ -44,8 +44,8 @@ else
     etcd_initial_cluster_state="$(echo "$add_member_output" | grep ETCD_INITIAL_CLUSTER_STATE | awk -F'\"' '{print $2}' | perl -pe "s{'}{}g")"
     
     nohup ./etcd -name "$etcd_name" -initial-advertise-peer-urls "http://${MY_IPADDRESS}:2380" \
-	-listen-peer-urls "http://${MY_IPADDRESS}:2380" \
-	-listen-client-urls "http://${MY_IPADDRESS}:2379" \
+	-listen-peer-urls "http://${MY_IPADDRESS}:2380,http://127.0.0.1:2380" \
+	-listen-client-urls "http://${MY_IPADDRESS}:2379,http://127.0.0.1:2379" \
 	-advertise-client-urls "http://${MY_IPADDRESS}:2379" \
 	-initial-cluster "${etcd_initial_cluster}" \
 	-initial-cluster-state "${etcd_initial_cluster_state}" 2>&1 >> "$etcd_log_file" &
