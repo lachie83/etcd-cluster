@@ -25,15 +25,14 @@ fi
         health=$(echo "$therest" | awk -F':' '{print $2}' | perl -pe 's{/}{}g')
         member_ip=$(echo "$therest" | awk -F':' '{print $3}' | perl -pe 's{/}{}g')
         ### first, lets remove any unhealthy members
-
+     
         echo "checking id:$member_id on ip:$member_ip which is $health"
-        if (echo "$health" | grep -q unhealthy) || (! echo "$addresses" | grep -q "$member_ip"); then
+        if (echo "$health" | grep -q -e "unhealthy" -e "unreachable") || (! echo "$addresses" | grep -q "$member_ip"); then
             echo "removing stale member from cluster: $member_ip"
             ./etcdctl member remove "$member_id"
         fi
     done
 )
-
 
 EOF
 
