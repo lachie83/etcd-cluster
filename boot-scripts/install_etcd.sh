@@ -47,8 +47,6 @@ else
 	-listen-peer-urls "http://${MY_IPADDRESS}:2380" \
 	-listen-client-urls "http://${MY_IPADDRESS}:2379" \
 	-advertise-client-urls "http://${MY_IPADDRESS}:2379" \
-	-peer-bind-addr "0.0.0.0" \
-	-bind-addr "0.0.0.0" \
 	-initial-cluster "${etcd_initial_cluster}" \
 	-initial-cluster-state "${etcd_initial_cluster_state}" 2>&1 >> "$etcd_log_file" &
 fi
