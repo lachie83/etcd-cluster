@@ -37,7 +37,13 @@ if [ "true" = "$IS_LEADER" ]; then
 	-initial-cluster-token "$cluster_name" \
 	-initial-cluster "$name=http://${MY_IPADDRESS}:2380" 2>&1 >> "$etcd_log_file" &
 else
-    ## we are not the leaders, lets generate a join string
+    ## we are not the leaders, lets wait for the leader
+    while ! "$(nc -w 2 -z ${cluster_name}.${dns_zone} 2379)" 2>&1 | grep -q "succeeded" ; do
+	echo "waiting for leader"
+    done
+
+    ## now lets generate a join string
+    
     add_member_output="$(./etcdctl --endpoint "http://${cluster_name}.${dns_zone}:2379" member add "$name" "http://${MY_IPADDRESS}:2380")"
     etcd_name="$(echo "$add_member_output" | grep ETCD_NAME | awk -F'\"' '{print $2}')"
     etcd_initial_cluster="$(echo "$add_member_output" | grep ETCD_INITIAL_CLUSTER\\b | awk -F'\"' '{print $2}')"
