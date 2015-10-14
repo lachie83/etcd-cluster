@@ -40,11 +40,10 @@ if [ "true" = "$IS_LEADER" ]; then
 	-initial-cluster "$name=http://${MY_IPADDRESS}:2380" 2>&1 >> "$etcd_log_file" &
 else
     ## we are not the leaders, lets wait for the leader
-    nc -w 5 -z "${cluster_name}.${dns_zone}" 2379
-    while [ $? -ne 0 ]; do
-	nc -w 5 -z "${cluster_name}.${dns_zone}" 2379
-	echo "waiting for leader"
-    done
+    if ./etcdctl --endpoint "http://${cluster_name}.${dns_zone}:2379" cluster-health 2>&1 | grep -q "exceeded header timeout"; then 
+	echo "waiting for leader";
+	sleep 5
+    fi
 
     ## now lets generate a join string
     
