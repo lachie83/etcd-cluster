@@ -17,6 +17,7 @@ dns_zone="${DNS_ZONE}"
 etcd_log_file="${ETCD_LOG_FILE:-/var/log/etcd.log}"
 echo "installing etcd"
 
+touch "$etcd_log_file"
 etcd_dir="/opt/etcd"
 (
     cd /tmp
