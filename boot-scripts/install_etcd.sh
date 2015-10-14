@@ -40,7 +40,7 @@ if [ "true" = "$IS_LEADER" ]; then
 	-initial-cluster "$name=http://${MY_IPADDRESS}:2380" 2>&1 >> "$etcd_log_file" &
 else
     ## we are not the leaders, lets wait for the leader
-    if ./etcdctl --endpoint "http://${cluster_name}.${dns_zone}:2379" cluster-health 2>&1 | grep -q -e "exceeded header timeout" -e "failed to list members"; then 
+    if ./etcdctl --endpoint "http://${cluster_name}.${dns_zone}:2379" cluster-health 2>&1 | grep -q -e "exceeded header timeout" -e "failed to list members" -e "etcd cluster is unavailable or misconfigured"; then 
 	echo "waiting for leader";
 	sleep 5
     fi
