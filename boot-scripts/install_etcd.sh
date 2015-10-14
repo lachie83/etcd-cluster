@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 ######################################################################
 #
 # VARIABLES:
@@ -39,7 +40,9 @@ if [ "true" = "$IS_LEADER" ]; then
 	-initial-cluster "$name=http://${MY_IPADDRESS}:2380" 2>&1 >> "$etcd_log_file" &
 else
     ## we are not the leaders, lets wait for the leader
-    while ! "$(nc -w 2 -z ${cluster_name}.${dns_zone} 2379)" 2>&1 | grep -q "succeeded" ; do
+    nc -w 5 -z "${cluster_name}.${dns_zone}" 2379
+    while [ $? -ne 0 ]; do
+	nc -w 5 -z "${cluster_name}.${dns_zone}" 2379
 	echo "waiting for leader"
     done
 
