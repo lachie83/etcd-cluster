@@ -3,17 +3,46 @@ variables:
         description: the cloudcoreo defined vpc to add this cluster to
         type: String
         required: true
+        default: dev-vpc
+    DNS_ZONE:
+        description: the dns zone (eg. example.com)
+        type: String
+        required: true
+    VPC_CIDR:
+        description: the cloudcoreo defined vpc to add this cluster to
+        type: String
+        required: true
+        default: 10.1.0.0/16
+    VPC_SEARCH_TAGS:
+        description: if you have more than one VPC with the same CIDR, and it is not under CloudCoreo control, we need a way to find it. Enter some unique tags that exist on the VPC you want us to find. ['env=production','Name=prod-vpc']
+        type: Array
+        required: false
+    PRIVATE_ROUTE_SEARCH_TAGS:
+        description: if you more than one route table or set of route tables, and it is not under CloudCoreo control, we need a way to find it. Enter some unique tags that exist on your route tables you want us to find. i.e. ['Name=my-private-routetable','env=dev']
+        type: Array
+        required: false
+    PRIVATE_SUBNET_SEARCH_TAGS:
+        description: Usually the private-routetable association is enough for us to find the subnets you need, but if you have more than one subnet, we may need a way to find them. unique tags is a great way. enter them there. i.e. ['Name=my-private-subnet']
+        type: Array
+        required: false
     PRIVATE_SUBNET_NAME:
         description: the private subnet in which the cluster should be added
         type: String
         required: true
-    DNS_ZONE:
-        description: the zone in which the internal elb dns entry should be maintained
+        default: dev-private-subnet
+    PRIVATE_ROUTE_NAME:
+        description: the private subnet in which the cluster should be added
         type: String
         required: true
-    CLUSTER_AMI:
-        description: "the ami to launch for the cluster - default is Amazon Linux AMI 2015.03 (HVM), SSD Volume Type"
-        switch: "INSTANCE::region"
+        default: dev-private-route
+    ETCD_PKG_VERSION:
+        description: etcd version
+        type: String
+        required: true
+        default: 2.2.0
+    ETCD_CLUSTER_AMI:
+        description: the ami to launch for the etcd cluster - default is Amazon Linux AMI 2015.03 (HVM), SSD Volume Type
+        switch: INSTANCE::region
         cases:
             us-east-1: ami-1ecae776
             us-west-1: ami-d114f295
@@ -26,103 +55,131 @@ variables:
             sa-east-1: ami-b52890a8
         type: case
         required: true
-    CLUSTER_NAME:
-        default: leadercluster
-        description: the name of the cluster - this will become your dns record too
+        overrides:
+            - CLUSTER_AMI
+    ETCD_CLUSTER_NAME:
+        default: dev-etcd
+        description: the name of the etcd cluster - this will become your dns record too
         type: String
         required: true
-    CLUSTER_ELB_TRAFFIC_PORTS:
+        overrides:
+            - CLUSTER_NAME
+    ETCD_ELB_TRAFFIC_PORTS:
         default:
-            - 80
+            - 2379
+            - 2380
         description: ports that need to allow traffic into the ELB
         type: Array
         required: true
-    CLUSTER_ELB_TRAFFIC_CIDRS:
+        overrides:
+            - CLUSTER_ELB_TRAFFIC_PORTS
+    ETCD_ELB_TRAFFIC_CIDRS:
         default:
-            - 10.0.0.0/8
+            - '10.0.0.0/8'
         description: the cidrs to allow traffic from on the ELB itself
         type: Array
         required: true
-    CLUSTER_TCP_HEALTH_CHECK_PORT:
-        default: 8001
-        description: a tcp port the ELB will check every so often - this defines health and ASG termination
+        overrides:
+            - CLUSTER_ELB_TRAFFIC_CIDRS
+    ETCD_TCP_HEALTH_CHECK_PORT:
+        default: 2379
+        description: the tcp port the ELB will check to verify ETCD is running
         type: number
         required: true
-    CLUSTER_INSTANCE_TRAFFIC_PORTS:
-        default:
-            - 8443
-            - 8001
-            - 8002
+        overrides:
+            - CLUSTER_TCP_HEALTH_CHECK_PORT
+    ETCD_CLUSTER_INSTANCE_TRAFFIC_PORTS:
+        default: 
+            - 2379
+            - 2380
             - 22
         description: ports to allow traffic on directly to the instances
         type: Array
         required: true
-    CLUSTER_INSTANCE_TRAFFIC_CIDRS:
-        default:
-            - 10.0.0.0/8
+        overrides:
+            - CLUSTER_INSTANCE_TRAFFIC_PORTS
+    ETCD_CLUSTER_INSTANCE_TRAFFIC_CIDRS:
+        default: 
+            - '10.0.0.0/8'
         description: cidrs that are allowed to access the instances directly
         type: Array
         required: true
-    CLUSTER_SIZE:
+        overrides:
+            - CLUSTER_INSTANCE_TRAFFIC_CIDRS
+    ETCD_INSTANCE_SIZE:
         default: t2.small
         description: the image size to launch
         required: true
-    CLUSTER_GROUP_SIZE_MIN:
+        overrides:
+            - CLUSTER_SIZE
+    ETCD_CLUSTER_SIZE_MIN:
         default: 3
         description: the minimum number of instances to launch
         type: number
         required: true
-    CLUSTER_GROUP_SIZE_MAX:
+        overrides:
+            - CLUSTER_GROUP_SIZE_MIN
+    ETCD_CLUSTER_SIZE_MAX:
         default: 5
         description: the maxmium number of instances to launch
         type: number
         required: true
-    CLUSTER_HEALTH_CHECK_GRACE_PERIOD:
+        overrides:
+            - CLUSTER_GROUP_SIZE_MAX
+    ETCD_INSTANCE_HEALTH_CHECK_GRACE_PERIOD:
         default: 600
         description: the time in seconds to allow for instance to boot before checking health
         type: number
         required: true
-    CLUSTER_UPGRADE_COOLDOWN:
+        overrides:
+            - CLUSTER_HEALTH_CHECK_GRACE_PERIOD
+    ETCD_CLUSTER_UPGRADE_COOLDOWN:
         default: 300
         description: the time in seconds between rolling instances during an upgrade
         type: number
         required: true
+        overrides:
+            - CLUSTER_UPGRADE_COOLDOWN
     TIMEZONE:
         default: America/Chicago
-        value: America/Chicago
         description: the timezone the servers should come up in
         overrides: null
         required: true
         type: null
-    ELB_LISTENERS:
+    ETCD_ELB_LISTENERS:
         default: >
                  [
                    {
                        :elb_protocol => 'tcp',
-                       :elb_port => 2080,
+                       :elb_port => 2379,
                        :to_protocol => 'tcp',
-                       :to_port => 2080
-                   }
+                       :to_port => 2379
+                   },
                    {
                        :elb_protocol => 'tcp',
-                       :elb_port => 2079,
+                       :elb_port => 2380,
                        :to_protocol => 'tcp',
-                       :to_port => 2079
+                       :to_port => 2380
                    }
                  ]
         description: The listeners to apply to the ELB
-    CLUSTER_KEY:
+        overrides:
+            - ELB_LISTENERS
+    ETCD_INSTANCE_KEY_NAME:
         description: the ssh key to associate with the instance(s) - blank will disable ssh
         type: string
         required: false
+        overrides:
+            - CLUSTER_KEY
     DATADOG_KEY:
-        default: null
-        value: null
+        default: ""
         description: "If you have a datadog key, enter it here and we will install the agent"
         overrides: null
         required: false
-    WAIT_FOR_CLUSTER_MIN:
+    ETCD_WAIT_FOR_CLUSTER_MIN:
         default: true
         description: true if the cluster should wait for all instances to be in a running state
         type: boolean
         required: false
+        overrides:
+            - WAIT_FOR_CLUSTER_MIN
